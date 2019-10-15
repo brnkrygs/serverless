@@ -1,44 +1,41 @@
 <!--
 title: Serverless Framework Commands - AWS Lambda - Deploy
-menuText: Deploy
-menuOrder: 3
+menuText: deploy
+menuOrder: 5
 description: Deploy your service to the specified provider
 layout: Doc
 -->
 
 <!-- DOCS-SITE-LINK:START automatically generated  -->
+
 ### [Read this on the main serverless docs site](https://www.serverless.com/framework/docs/providers/aws/cli-reference/deploy)
+
 <!-- DOCS-SITE-LINK:END -->
 
-# Deploy
+# AWS - deploy
 
-The `sls deploy` command deploys your service or an individual function.
-
-**Deploy entire service:**
+The `sls deploy` command deploys your entire service via CloudFormation. Run this command when you have made infrastructure changes (i.e., you edited `serverless.yml`). Use `serverless deploy function -f myFunction` when you have made code changes and you want to quickly upload your updated code to AWS Lambda or just change function configuration.
 
 ```bash
 serverless deploy
 ```
 
-**Deploy a single function:**
-
-```bash
-serverless deploy function -f functionName
-```
-
-**Note:** `sls deploy function` is faster than a full service deploy and recommended for a faster development flow
-
 ## Options
-- `--function` or `-f` The name of the function which should be deployed (**Note:** only available when running
-`serverless deploy function`)
+
+- `--config` or `-c` Name of your configuration file, if other than `serverless.yml|.yaml|.js|.json`.
 - `--stage` or `-s` The stage in your service that you want to deploy to.
 - `--region` or `-r` The region in that stage that you want to deploy to.
-- `--noDeploy` or `-n` Skips the deployment steps and leaves artifacts in the `.serverless` directory
+- `--package` or `-p` path to a pre-packaged directory and skip packaging step.
 - `--verbose` or `-v` Shows all stack events during deployment, and display any Stack Output.
+- `--force` Forces a deployment to take place.
+- `--function` or `-f` Invoke `deploy function` (see above). Convenience shortcut - cannot be used with `--package`.
+- `--conceal` Hides secrets from the output (e.g. API Gateway key values).
+- `--aws-s3-accelerate` Enables S3 Transfer Acceleration making uploading artifacts much faster. You can read more about it [here](http://docs.aws.amazon.com/AmazonS3/latest/dev/transfer-acceleration.html). It requires additional `s3:PutAccelerateConfiguration` permissions. **Note: When using Transfer Acceleration, additional data transfer charges may apply.**
+- `--no-aws-s3-accelerate` Explicitly disables S3 Transfer Acceleration. It also requires additional `s3:PutAccelerateConfiguration` permissions.
 
 ## Artifacts
 
-After the `serverless deploy` command runs all created deployment artifacts are placed in the `.serverless` folder of the service.
+After the `serverless deploy` command runs, the framework runs `serverless package` in the background first then deploys the generated package.
 
 ## Examples
 
@@ -60,20 +57,10 @@ serverless deploy --stage production --region eu-central-1
 With this example we've defined that we want our service to be deployed to the `production` stage in the region
 `eu-central-1`.
 
-## List existing deploys
+### Deployment from a pre-packaged directory
 
 ```bash
-serverless deploy list
+serverless deploy --package /path/to/package/directory
 ```
 
-Running this command will list your recent deployments available in your S3 deployment bucket. It will use stage and region from the provider config and show the timestamp of each deployment so you can roll back if necessary.
-
-## Provided lifecycle events
-- `deploy:cleanup`
-- `deploy:initialize`
-- `deploy:setupProviderConfiguration`
-- `deploy:createDeploymentArtifacts`
-- `deploy:compileFunctions`
-- `deploy:compileEvents`
-- `deploy:deploy`
-- `deploy:function:deploy`
+With this example, the packaging step will be skipped and the framework will start deploying the package from the `/path/to/package/directory` directory.

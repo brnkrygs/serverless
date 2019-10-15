@@ -2,95 +2,41 @@
 title: Serverless Framework Documentation
 menuText: Docs
 layout: Doc
+menuItems:
+  - {menuText: "Get Started", path: /framework/docs/getting-started/}
+  - {menuText: "Dashboard Reference", path: /framework/docs/dashboard/}
+  - {menuText: "- Insights", path: /framework/docs/dashboard/insights/}
+  - {menuText: "- Notifications", path: /framework/docs/dashboard/notifications/}
+  - {menuText: "- Output Variables", path: /framework/docs/dashboard/output-variables/}
+  - {menuText: "- Secrets", path: /framework/docs/dashboard/secrets/}
+  - {menuText: "- Safeguards", path: /framework/docs/dashboard/safeguards/}
+  - {menuText: "- Access Roles", path: /framework/docs/dashboard/access-roles/}
+  - {menuText: "- Profiles", path: /framework/docs/dashboard/profiles/}
+  - {menuText: "- Pipelines", path: /framework/docs/dashboard/pipelines/}
+  - {menuText: "Provider CLI References", path: /framework/docs/providers}
+  - {menuText: "- AWS", path: /framework/docs/providers/aws/}
+  - {menuText: "- Azure", path: /framework/docs/providers/azure/}
+  - {menuText: "- fn", path: /framework/docs/providers/fn/}
+  - {menuText: "- Google", path: /framework/docs/providers/google/}
+  - {menuText: "- OpenWhisk", path: /framework/docs/providers/openwhisk/}
+  - {menuText: "- Kubeless" , path: /framework/docs/providers/kubeless/}
+  - {menuText: "- Spotinst" , path: /framework/docs/providers/spotinst/}
+  - {menuText: "- Cloudflare" , path: /framework/docs/providers/cloudflare/}
+  - {menuText: "- Alibaba Cloud" , path: /framework/docs/providers/aliyun/}
+  - {menuText: "Examples", path: https://serverless.com/examples/}
+  - {menuText: "Tutorials", path: https://serverless.com/blog/category/guides-and-tutorials/}
 -->
 
 <!-- DOCS-SITE-LINK:START automatically generated  -->
+
 ### [Read this on the main serverless docs site](https://www.serverless.com/framework/docs/)
+
 <!-- DOCS-SITE-LINK:END -->
 
 # Documentation
 
-The Serverless Framework allows you to deploy auto-scaling, pay-per-execution, event-driven functions to any cloud.  We currently support Amazon Web Service's Lambda, and are expanding to support other cloud providers.
+The Serverless Framework helps you build serverless apps with radically less overhead and cost. It provides a powerful, unified experience to develop, deploy, test, secure and monitor your serverless applications.
 
-<div class="docsSections">
-  <div class="docsSection">
-    <div class="docsSectionHeader">
-      <a href="./providers/aws/guide/">
-      <img src="https://s3-us-west-2.amazonaws.com/assets.site.serverless.com/images/docs_guide_aws5.jpg" alt="Serverless Framework AWS Lambda Guide" width="250" draggable="false"/>
-      </a>
-    </div>
-    <div class="test">
-      <ul>
-        <li><a href="./providers/aws/guide/intro.md">Intro</a></li>
-        <li><a href="./providers/aws/guide/installation.md">Installation</a></li>
-        <li><a href="./providers/aws/guide/credentials.md">Credentials</a></li>
-        <li><a href="./providers/aws/guide/services.md">Services</a></li>
-        <li><a href="./providers/aws/guide/functions.md">Functions</a></li>
-        <li><a href="./providers/aws/guide/events.md">Events</a></li>
-        <li><a href="./providers/aws/guide/resources.md">Resources</a></li>
-        <li><a href="./providers/aws/guide/deploying.md">Deploying</a></li>
-        <li><a href="./providers/aws/guide/testing.md">Testing</a></li>
-        <li><a href="./providers/aws/guide/variables.md">Variables</a></li>
-        <li><a href="./providers/aws/guide/packaging.md">Packaging</a></li>
-        <li><a href="./providers/aws/guide/plugins.md">Plugins</a></li>
-        <li><a href="./providers/aws/guide/workflow.md">Workflow</a></li>
-      </ul>
-    </div>
-  </div>
+The Serverless Framework consists of an open source [CLI](./providers/) that makes it easy to develop, deploy and test serverless apps across different cloud providers, as well as a hosted [Dashboard](./dashboard/) that includes features designed to further simplify serverless development, deployment, and testing, and enable you to easily secure and monitor your serverless apps.
 
-  <div class="docsSection">
-    <div class="docsSectionHeader">
-      <a href="./providers/aws/cli-reference/">
-      <img src="https://s3-us-west-2.amazonaws.com/assets.site.serverless.com/images/docs_clireference_aws4.jpg" alt="Serverless Framework AWS Lambda CLI Reference" width="250" draggable="false"/>
-      </a>
-    </div>
-    <div>
-      <ul>
-        <li><a href="./providers/aws/cli-reference/create.md">Create</a></li>
-        <li><a href="./providers/aws/cli-reference/install.md">Install</a></li>
-        <li><a href="./providers/aws/cli-reference/deploy.md">Deploy</a></li>
-        <li><a href="./providers/aws/cli-reference/invoke.md">Invoke</a></li>
-        <li><a href="./providers/aws/cli-reference/logs.md">Logs</a></li>
-        <li><a href="./providers/aws/cli-reference/info.md">Info</a></li>
-        <li><a href="./providers/aws/cli-reference/rollback.md">Rollback</a></li>
-        <li><a href="./providers/aws/cli-reference/remove.md">Remove</a></li>
-        <li><a href="./providers/aws/cli-reference/slstats.md">Serverless Stats</a></li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="docsSection">
-    <div class="docsSectionHeader">
-      <a href="./providers/aws/events/">
-      <img src="https://s3-us-west-2.amazonaws.com/assets.site.serverless.com/images/docs_events_aws4.jpg" alt="Serverless Framework AWS Lambda Events"  width="250" draggable="false"/>
-      </a>
-    </div>
-    <div>
-      <ul>
-        <li><a href="./providers/aws/events/apigateway.md">API Gateway</a></li>
-        <li><a href="./providers/aws/events/streams.md">Streams</a></li>
-        <li><a href="./providers/aws/events/s3.md">S3</a></li>
-        <li><a href="./providers/aws/events/schedule.md">Schedule</a></li>
-        <li><a href="./providers/aws/events/sns.md">SNS</a></li>
-      </ul>
-    </div>
-  </div>
-
-  <div class="docsSection">
-    <div class="docsSectionHeader">
-      <a href="./providers/aws/examples/">
-      <img src="https://s3-us-west-2.amazonaws.com/assets.site.serverless.com/images/docs_examples_aws4.jpg" alt="Serverless Framework AWS Lambdxxxxa Examples" width="250" draggable="false"/>
-      </a>
-    </div>
-    <div>
-      <div>
-        <ul>
-          <li><a href="./providers/aws/examples/hello-world">Hello World</a></li>
-          <li><a href="./providers/aws/examples/cron">Cron</a></li>
-          <li><a href="./providers/aws/examples/using-external-libraries">Using External Libraries</a></li>
-          <li><a href="./providers/aws/examples/web-serving-html">Serving HTML page</a></li>
-        </ul>
-      </div>
-    </div>
-  </div>
-</div>
+If you are new to serverless and want to experience how fast and easy it is to build a serverless app, or if you are an experienced user of the Serverless Framework open source CLI and want to explore new features of the Framework, you can get started [here](./getting-started.md), for free.

@@ -2,44 +2,41 @@
 
 This checklist should be worked through when releasing a new Serverless version.
 
-## Pre-Release
-- [ ] Look through all open issues and PRs (if any) of that milestone and close them / move them to another
-milestone if still open
-- [ ] Look through all closed issues and PRs of that milestone to see what has changed. Run `./scripts/pr-since-last tag` or if you want to run against a specific tag `./scripts/pr-since-last tag v1.0.3` to get a list of all merged PR's since a specific tag.
-- [ ] Create Changelog for this new release
-- [ ] Close milestone on Github
-- [ ] Create a new release in GitHub for Release Notes.
+More info about our release process can be found in the [`RELEASE_PROCESS.md`](./RELEASE_PROCESS.md) document.
 
-# Testing
-- [ ] Create a Serverless service (with some events), deploy and test it intensively
-- [ ] Run integration test repository against the current release
-- [ ] Look through the milestone and test all of the new major changes
-- [ ] Run "npm test"
-- [ ] Run "npm run integration-test"
+## Pre-Release
+
+- [ ] Look through all open issues and PRs (if any) of that milestone and close them / move them to another
+      milestone if still open
+- [ ] Create a new branch for the release
+- [ ] Bump version ranges of _all_ dependencies to latest supported versions (e.g. if latest version of a dependency is `2.3.5`, range in a `package.json` is `^2.2.4` then it should be updated to `^2.3.5`)  
+       _Note: Unfortunately there seems no reliable utility to automate that (there's a [request at `npm-check-updates`](https://github.com/tjunnone/npm-check-updates/issues/581))  
+       If you handle installation of dependencies through [npm-cross-link](https://github.com/medikoo/npm-cross-link#npm-cross-link) then [`--bump-deps`](https://github.com/medikoo/npm-cross-link#general-options) option will bump version ranges as expected_
+- [ ] Bump the version number in `package.json`
+- [ ] Run `./scripts/prs-since-last-tag <OLD-TAG>`
+- [ ] Save the terminal output to your clipboard
+- [ ] Close the milestone on GitHub
+- [ ] Create a new [**draft** release](https://github.com/serverless/serverless/releases/new) in GitHub
+  - [ ] Use the content in your clipboard as a description (without the heading)
+  - [ ] Ensure that the "Tag version" follows our naming convention
 
 ## Prepare Package
-- [ ] Create a new branch to bump version in package.json
-- [ ] Install the latest NPM version or Docker container with latest Node and NPM
-- [ ] Bump version in package.json, remove `node_modules` folder and run `npm install` and `npm shrinkwrap`
-- [ ] Make sure all files that need to be pushed are included in `package.json->files`
-- [ ] Send PR and merge PR with new version to be released
-- [ ] Go back to branch you want to release from (e.g. master or v1) and pull bumped version changes from Github
+
+- [ ] Install the latest `npm` version or Docker container with latest `node` and `npm` (Ensure to work with an `npm` version which is distributed with latest `node` version)
+- [ ] Update `CHANGELOG.md` with the content from your clipboard
+- [ ] Make sure all files that need to be pushed are included in `package.json -> files`
+- [ ] Commit your changes (make sure that `package.json` and `CHANGELOG.md` are updated)
+- [ ] Push your branch and open up a new PR
+- [ ] Await approval and merge the PR into `master`
+- [ ] Go back to the branch you want to release from (e.g. `master`) and pull the changes from GitHub
 - [ ] Make sure there are no local changes to your repository (or reset with `git reset --hard HEAD`)
-- [ ] Check package.json and npm-shrinkwrap.json version config to make sure it fits what we want to release. *DO THIS, DON'T SKIP, DON'T BE LAZY!!!*
+- [ ] Check `package.json` version config to make sure it fits what we want to release
 
-## Git Tagging
-- [ ] Create a git tag with the version (`git tag <VersionName>`: `git tag v1.0.0`)
-- [ ] Push the git tag (`git push origin <VersionName>`)
+## Releasing
 
-## Segment Configuration
-- [ ] Update Segment.io key in Utils.js (never push the key to GitHub and revert afterwards with `git checkout .`)
-- [ ] Run `./bin/serverless help` and filter for this new version in the Segment debugger to make sure data is sent to Segment for this new version
-
-## Release to NPM
-- [ ] Log into npm (`npm login`)
-- [ ] Publish to NPM (`npm publish —-tag <TagForInstall>`, e.g. `npm publish --tag beta` or `npm publish` to release latest production framework)
-- [ ] Update Alpha/Beta accordingly so they point to the latest release. If its an Alpha Release the Beta tag should point to the latest stable release. This way Alpha/Beta always either point to something stable or the highest priority release in Alpha/Beta stage (`npm dist-tag add serverless@<VERSION> alpha`, `npm dist-tag add serverless@<VERSION> beta`)
+- [ ] Publish the GitHub release draft (Travis CI will automatically publish the new release to `npm`)
+- [ ] Update the branch ref in the site repo so docs are updated: https://github.com/serverless/site/blob/master/scripts/docs/config.js#L8
 
 ## Validate Release
-- [ ] Validate NPM install works (`npm install -g serverless@<TagForInstall>` or `npm install -g serverless` if latest is released)
-- [ ] Check Segment.com production data if events are coming in correctly with the new version
+
+- [ ] Validate that `npm install` works (`npm install -g serverless@<new-tag>` or `npm install -g serverless` if latest is released)

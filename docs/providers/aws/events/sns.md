@@ -1,13 +1,15 @@
 <!--
 title: Serverless Framework - AWS Lambda Events - SNS
 menuText: SNS
-menuOrder: 5
+menuOrder: 6
 description:  Setting up AWS SNS Events with AWS Lambda via the Serverless Framework
 layout: Doc
 -->
 
 <!-- DOCS-SITE-LINK:START automatically generated  -->
+
 ### [Read this on the main serverless docs site](https://www.serverless.com/framework/docs/providers/aws/events/sns)
+
 <!-- DOCS-SITE-LINK:END -->
 
 # SNS
@@ -38,9 +40,9 @@ functions:
 
 This will run both functions for a message sent to the dispatch topic.
 
-## Creating the permission for a pre-existing topic
+## Using a pre-existing topic
 
-If you want to run a function from a preexisting SNS topic you need to connect the topic to a Lambda function yourself. By defining a topic arn inside of the SNS topic we're able to set up the Lambda Permission so SNS is allowed to call this function.
+If an `arn:` is specified, the framework will give permission to the topic to invoke the function and subscribe the function to the topic.
 
 ```yml
 functions:
@@ -50,11 +52,71 @@ functions:
       - sns: arn:xxx
 ```
 
-Just make sure your function is already subscribed to the topic, as there's no way to add subscriptions to pre-existing topics in CF. The framework will just give permission to SNS to invoke the function.
+```yml
+functions:
+  dispatcher:
+    handler: dispatcher.dispatch
+    events:
+      - sns:
+          arn: arn:xxx
+```
+
+Or with intrinsic CloudFormation function like `Fn::Join`, `Fn::GetAtt`, or `Fn::Ref` (or their shorthand counterparts).
+**Note:** The arn can be in a different region to enable cross region invocation
+
+```yml
+functions:
+  dispatcher:
+    handler: dispatcher.dispatch
+    events:
+      - sns:
+          arn:
+            Fn::Join:
+              - ':'
+              - - 'arn:aws:sns'
+                - Ref: 'AWS::Region'
+                - Ref: 'AWS::AccountId'
+                - 'MyCustomTopic'
+          topicName: MyCustomTopic
+```
+
+If your SNS topic doesn't yet exist but is defined in the serverless.yml file you're editing, you'll need to use `Fn::Ref` or `!Ref` to get the ARN. Do not build a string as in the above example!
+
+```yml
+functions:
+  dispatcher:
+    handler: dispatcher.dispatch
+    events:
+      - sns:
+          arn: !Ref SuperTopic
+          topicName: MyCustomTopic
+
+resources:
+  Resources:
+    SuperTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: MyCustomTopic
+```
+
+**Note:** If an `arn` string is specified but not a `topicName`, the last substring starting with `:` will be extracted as the `topicName`. If an `arn` object is specified, `topicName` must be specified as a string, used only to name the underlying Cloudformation mapping resources. You can take advantage of this behavior when subscribing to multiple topics with the same name in different regions/accounts to avoid collisions between Cloudformation resource names.
+
+```yml
+functions:
+  hello:
+    handler: handler.run
+    events:
+      - sns:
+          arn: arn:aws:sns:us-east-1:00000000000:topicname
+          topicName: topicname-account-1-us-east-1
+      - sns:
+          arn: arn:aws:sns:us-east-1:11111111111:topicname
+          topicName: topicname-account-2-us-east-1
+```
 
 ## Setting a display name
 
-This event definition ensures that the `aggregator` function get's called every time a message is sent to the
+This event definition ensures that the `aggregator` function gets called every time a message is sent to the
 `aggregate` topic. `Data aggregation pipeline` will be shown in the AWS console so that the user can understand what the
 SNS topic is used for.
 
@@ -66,4 +128,21 @@ functions:
       - sns:
           topicName: aggregate
           displayName: Data aggregation pipeline
+```
+
+## Setting a filter policy
+
+This event definition creates an SNS topic which subscription uses a filter policy. The filter policy filters out messages that don't have attribute key `pet` with value `dog` or `cat`.
+
+```yml
+functions:
+  pets:
+    handler: pets.handler
+    events:
+      - sns:
+          topicName: pets
+          filterPolicy:
+            pet:
+              - dog
+              - cat
 ```

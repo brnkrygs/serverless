@@ -1,50 +1,60 @@
 <!--
 title: Serverless Framework Commands - AWS Lambda - Invoke
-menuText: Invoke
-menuOrder: 4
+menuText: invoke
+menuOrder: 8
 description: Invoke an AWS Lambda Function using the Serverless Framework
 layout: Doc
 -->
 
 <!-- DOCS-SITE-LINK:START automatically generated  -->
+
 ### [Read this on the main serverless docs site](https://www.serverless.com/framework/docs/providers/aws/cli-reference/invoke)
+
 <!-- DOCS-SITE-LINK:END -->
 
-# Invoke
+# AWS - Invoke
 
-Invokes a previously deployed function. It allows to send event data to the function and read logs and display other important information of the function invoke.
+Invokes deployed function. It allows to send event data to the function, read logs and display other important information of the function invocation.
 
 ```bash
 serverless invoke [local] --function functionName
 ```
 
+**Note:** Please refer to [this guide](https://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-set-up-simple-proxy.html#api-gateway-simple-proxy-for-lambda-input-format) for event data passing when your function uses the `http` event with a Lambda Proxy integration.
+
 ## Options
+
 - `--function` or `-f` The name of the function in your service that you want to invoke. **Required**.
 - `--stage` or `-s` The stage in your service you want to invoke your function in.
 - `--region` or `-r` The region in your stage that you want to invoke your function in.
+- `--qualifier` or `-q` The version number or alias to invoke your function in. Default is `$LATEST`.
+- `--data` or `-d` String data to be passed as an event to your function. By default data is read from standard input.
+- `--raw` Pass data as a raw string even if it is JSON. If not set, JSON data are parsed and passed as an object.
 - `--path` or `-p` The path to a json file with input data to be passed to the invoked function. This path is relative to the root directory of the service.
 - `--type` or `-t` The type of invocation. Either `RequestResponse`, `Event` or `DryRun`. Default is `RequestResponse`.
-- `--log` or `-l` If set to `true` and invocation type is `RequestResponse`, it will output logging data of the invocation.
-Default is `false`.
-- `--data` or `-d` String data to be passed as an event to your function.
+- `--log` or `-l` If set to `true` and invocation type is `RequestResponse`, it will output logging data of the invocation. Default is `false`.
 
 ## Provided lifecycle events
-- `invoke:invoke`
 
+- `invoke:invoke`
 
 # Invoke Local
 
-Invokes a function locally for testing and logs the output. You can only invoke Node.js runtime locally at the moment. Keep in mind that we mock the `context` with simple mock data.
+Invokes a function locally for testing and logs the output. Keep in mind that we mock the `context` with simple mock data.
 
 ```bash
 serverless invoke local --function functionName
 ```
 
 ## Options
+
 - `--function` or `-f` The name of the function in your service that you want to invoke locally. **Required**.
-- `--path` or `-p` The path to a json file holding input data to be passed to the invoked function. This path is relative to the
-root directory of the service. The json file should have event and context properties to hold your mocked event and context data.
+- `--path` or `-p` The path to a json file holding input data to be passed to the invoked function as the `event`. This path is relative to the
+  root directory of the service.
 - `--data` or `-d` String data to be passed as an event to your function. Keep in mind that if you pass both `--path` and `--data`, the data included in the `--path` file will overwrite the data you passed with the `--data` flag.
+- `--raw` Pass data as a raw string even if it is JSON. If not set, JSON data are parsed and passed as an object.
+- `--contextPath` or `-x`, The path to a json file holding input context to be passed to the invoked function. This path is relative to the root directory of the service.
+- `--context` or `-c`, String data to be passed as a context to your function. Same like with `--data`, context included in `--contextPath` will overwrite the context you passed with `--context` flag.
 
 ## Examples
 
@@ -56,6 +66,18 @@ serverless invoke --function functionName --stage dev --region us-east-1
 
 This example will invoke your deployed function named `functionName` in region `us-east-1` in stage `dev`. This will
 output the result of the invocation in your terminal.
+
+#### Function invocation with data
+
+```bash
+serverless invoke --function functionName --stage dev --region us-east-1 --data "hello world"
+```
+
+#### Function invocation with data from standard input
+
+```bash
+node dataGenerator.js | serverless invoke --function functionName --stage dev --region us-east-1
+```
 
 #### Function invocation with logging
 
@@ -74,29 +96,46 @@ serverless invoke --function functionName --stage dev --region us-east-1 --path 
 This example will pass the json data in the `lib/data.json` file (relative to the root of the service) while invoking
 the specified/deployed function.
 
-#### Local function invocation
+#### Example `data.json`
 
-```bash
-serverless invoke local --function functionName
-```
-
-This example will locally invoke your function.
-
-
-#### Local function invocation with event data
-
-You can input test data in `event.json` file inside your service directory:
 ```json
 {
-  "foo": "bar"
+  "resource": "/",
+  "path": "/",
+  "httpMethod": "GET"
+  //  etc. //
 }
-
 ```
 
-and then pass it with the command
+### Local function invocation with custom context
 
 ```bash
-serverless invoke local --function functionName --path event.json
+serverless invoke local --function functionName --context "hello world"
 ```
 
-This example will locally invoke your function.
+### Local function invocation with context passing
+
+```bash
+serverless invoke local --function functionName --contextPath lib/context.json
+```
+
+This example will pass the json context in the `lib/context.json` file (relative to the root of the service) while invoking the specified/deployed function.
+
+### Limitations
+
+Currently, `invoke local` only supports the NodeJs and Python runtimes.
+
+## Resource permissions
+
+Lambda functions assume an _IAM role_ during execution: the framework creates this role, and set all the permission provided in the `iamRoleStatements` section of `serverless.yml`.
+
+Unless you explicitly state otherwise, every call to the AWS SDK inside the lambda function is made using this role (a temporary pair of key / secret is generated and set by AWS as environment variables, `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`).
+
+When you use `serverless invoke local`, the situation is quite different: the role isn't available (the function is executed on your local machine), so unless you set a different user directly in the code (or via a key pair of environment variables), the AWS SDK will use the default profile specified inside you AWS credential configuration file.
+
+Take a look to the official AWS documentation (in this particular instance, for the javascript SDK, but should be similar for all SDKs):
+
+- [http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html](http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-shared.html)
+- [http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-lambda.html](http://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/loading-node-credentials-lambda.html)
+
+Whatever approach you decide to implement, **be aware**: the set of permissions might be (and probably is) different, so you won't have an exact simulation of the _real_ IAM policy in place.
