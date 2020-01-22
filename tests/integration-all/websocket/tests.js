@@ -1,20 +1,14 @@
 'use strict';
 
 const path = require('path');
-const AWS = require('aws-sdk');
 const WebSocket = require('ws');
 const _ = require('lodash');
 const { expect } = require('chai');
+const awsRequest = require('@serverless/test/aws-request');
 
 const { getTmpDirPath, readYamlFile, writeYamlFile } = require('../../utils/fs');
-const {
-  region,
-  confirmCloudWatchLogs,
-  createTestService,
-  deployService,
-  removeService,
-  wait,
-} = require('../../utils/misc');
+const { confirmCloudWatchLogs, wait } = require('../../utils/misc');
+const { createTestService, deployService, removeService } = require('../../utils/integration');
 const {
   createApi,
   deleteApi,
@@ -22,8 +16,6 @@ const {
   createStage,
   deleteStage,
 } = require('../../utils/websocket');
-
-const CF = new AWS.CloudFormation({ region });
 
 describe('AWS - API Gateway Websocket Integration Test', function() {
   this.timeout(1000 * 60 * 10); // Involves time-taking deploys
@@ -33,27 +25,27 @@ describe('AWS - API Gateway Websocket Integration Test', function() {
   let serverlessFilePath;
   const stage = 'dev';
 
-  before(() => {
+  before(async () => {
     tmpDirPath = getTmpDirPath();
     console.info(`Temporary path: ${tmpDirPath}`);
     serverlessFilePath = path.join(tmpDirPath, 'serverless.yml');
-    const serverlessConfig = createTestService(tmpDirPath, {
+    const serverlessConfig = await createTestService(tmpDirPath, {
       templateDir: path.join(__dirname, 'service'),
     });
     serviceName = serverlessConfig.service;
     stackName = `${serviceName}-${stage}`;
     console.info(`Deploying "${stackName}" service...`);
-    deployService(tmpDirPath);
+    return deployService(tmpDirPath);
   });
 
   after(() => {
     console.info('Removing service...');
-    removeService(tmpDirPath);
+    return removeService(tmpDirPath);
   });
 
   describe('Minimal Setup', () => {
     it('should expose an accessible websocket endpoint', async () => {
-      const result = await CF.describeStacks({ StackName: stackName }).promise();
+      const result = await awsRequest('CloudFormation', 'describeStacks', { StackName: stackName });
       const webSocketServerUrl = _.find(result.Stacks[0].Outputs, {
         OutputKey: 'ServiceEndpointWebsocket',
       }).OutputValue;
@@ -108,7 +100,7 @@ describe('AWS - API Gateway Websocket Integration Test', function() {
           },
         });
         writeYamlFile(serverlessFilePath, serverless);
-        deployService(tmpDirPath);
+        return deployService(tmpDirPath);
       });
 
       after(async () => {
@@ -121,7 +113,7 @@ describe('AWS - API Gateway Websocket Integration Test', function() {
         await deleteStage(websocketApiId, 'dev');
         // NOTE: deploying once again to get the stack into the original state
         console.info('Redeploying service...');
-        deployService(tmpDirPath);
+        await deployService(tmpDirPath);
         console.info('Deleting external websocket API...');
         await deleteApi(websocketApiId);
       });

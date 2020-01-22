@@ -9,15 +9,53 @@ menuItems:
   - {menuText: Apache OpenWhisk Guide, path: /framework/docs/providers/openwhisk/guide/quick-start}
   - {menuText: Google Functions Guide, path: /framework/docs/providers/google/guide/quick-start}
   - {menuText: Kubeless Guide, path: /framework/docs/providers/kubeless/guide/quick-start}
+  - {menuText: Knative Guide, path: /framework/docs/providers/knative/guide/quick-start}
   - {menuText: Spotinst Guide, path: /framework/docs/providers/spotinst/guide/quick-start}
   - {menuText: Fn Guide, path: /framework/docs/providers/fn/guide/quick-start}
   - {menuText: Cloudflare Workers Guide, path: /framework/docs/providers/cloudflare/guide/quick-start}
   - {menuText: Alibaba Guide , path: /framework/docs/providers/aliyun/guide/quick-start}
+  - {menuText: Tencent Guide , path: /framework/docs/providers/tencent/guide/quick-start}
 -->
 
 # Getting Started with the Serverless Framework and AWS
 
 First things first, let's get the Serverless Framework open source CLI installed on your machine.
+
+## Installing as a standalone binary
+
+_(no Node.js or npm installation required)_
+
+### macOS & Linux
+
+Run following code in your terminal:
+
+```bash
+curl -o- -L https://slss.io/install | bash
+```
+
+_**Note**: To use newly installed binary you need to open another terminal window._
+
+To upgrade already installed version:
+
+```bash
+serverless upgrade
+```
+
+### Windows
+
+Install with [Chocolatey](https://chocolatey.org/) package manager:
+
+```bash
+choco install serverless
+```
+
+To upgrade already installed version:
+
+```bash
+choco upgrade serverless
+```
+
+## Installing via npm
 
 ```bash
 # Install the serverless cli
@@ -28,6 +66,8 @@ npm update -g serverless
 ```
 
 If you don’t already have [Node 6](https://nodejs.org/en/download/package-manager/) or higher on your machine, you’ll need to do that first.
+
+## Serverless Dashboard
 
 If you already registered for a [Serverless Framework Dashboard](https://dashboard.serverless.com) account, login to your account from the CLI.
 

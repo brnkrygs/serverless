@@ -4,7 +4,7 @@ const path = require('path');
 const { expect } = require('chai');
 const fse = require('fs-extra');
 const { execSync } = require('../utils/child-process');
-const { serverlessExec } = require('../utils/misc');
+const serverlessExec = require('../serverless-binary');
 const { getTmpDirPath, listZipFiles } = require('../utils/fs');
 
 const fixturePaths = {
@@ -13,8 +13,8 @@ const fixturePaths = {
   individuallyFunction: path.join(__dirname, 'fixtures/individually-function'),
 };
 
-describe('Integration test - Packaging', function() {
-  this.timeout(10000);
+describe('Integration test - Packaging - Lambda Files', function() {
+  this.timeout(15000);
   let cwd;
   beforeEach(() => {
     cwd = getTmpDirPath();
